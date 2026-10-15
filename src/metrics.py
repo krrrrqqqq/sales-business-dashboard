@@ -24,7 +24,7 @@ def calculate_kpis(df: pd.DataFrame) -> dict[str, float | int]:
 def calculate_funnel(df: pd.DataFrame) -> pd.DataFrame:
     """Count leads that reached each stage and calculate progression rates.
 
-    \`stage\` stores the furthest stage reached by a lead. Lost leads retain the
+    `stage` stores the furthest stage reached by a lead. Lost leads retain the
     stage they reached before being marked Lost. Counts are cumulative: e.g. a
     lead at Proposal is counted at New, Contacted, Qualified and Proposal.
     """
