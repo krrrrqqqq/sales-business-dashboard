@@ -1,68 +1,75 @@
 # Sales & Leads Dashboard
 
-Interactive business dashboard built with Python, Pandas, Streamlit, and Plotly.
+Интерактивный дашборд для анализа лидов, воронки продаж, выручки и эффективности источников. Стек: **Python, Pandas, Streamlit, Plotly**.
 
-> **Educational project:** the bundled dataset is synthetic and does not represent a real company or real customers.
+> **Учебный проект:** все записи в `data/synthetic_sales.csv` синтетические. Это вымышленные лиды, даты и суммы, а не реальные клиенты или продажи.
 
-## Business questions
+## Возможности
 
-- How many leads entered the sales pipeline during the selected period?
-- What share of leads convert to won deals?
-- How does revenue change over time?
-- Which lead sources generate the most leads and the best conversion?
+- KPI: количество лидов, выигранные сделки, выручка, конверсия в Won и средняя сумма выигранной сделки.
+- Четыре графика: воронка, выручка по месяцу закрытия, эффективность источников, распределение лидов по статусам.
+- Фильтры по дате создания лида, источнику и статусу.
+- Загрузка пользовательского CSV, валидация столбцов и строк, сообщения об ошибках пустых/неверных файлов.
+- Таблица сравнения источников и экспорт отфильтрованных данных в CSV.
+- Юнит-тесты метрик и проверок данных.
 
-## Dashboard features
+## Бизнес-вопросы
 
-- KPI cards for lead count, won deals, revenue, and win conversion.
-- Sales funnel counts and conversion between consecutive stages.
-- Monthly revenue visualization.
-- Lead-source comparison by volume and conversion.
-- Filters for lead creation date, source, and status.
-- CSV upload with required-column checks and readable handling of empty or invalid files.
-- Small fixture CSV for manually checking calculations.
+1. Сколько лидов в воронке и сколько превратились в выигранные сделки?
+2. На каком этапе воронки наибольшие потери?
+3. Как меняется выручка по месяцу закрытия сделки?
+4. Какие источники дают больше лидов, более высокую конверсию и выручку?
+5. Как показатели меняются при выборе дат, источников и статусов?
 
-## Metrics
+## Формулы метрик
 
-- **Leads:** number of rows after filters and validation.
-- **Won deals:** count of records whose status is `Won`.
-- **Revenue:** sum of deal values for won deals, grouped by closing month.
-- **Win conversion:** won deals / all filtered leads × 100%.
-- **Stage conversion:** number in the next stage / number in the previous stage × 100%.
-- **Source conversion:** won leads from source / all leads from source × 100%.
+- **Лиды:** число уникальных `lead_id` в отфильтрованном наборе.
+- **Won:** количество лидов со статусом `Won`.
+- **Конверсия в Won:** `Won / все отфильтрованные лиды × 100%`.
+- **Выручка:** сумма `deal_amount` только по лидам со статусом `Won`.
+- **Средний чек Won:** `выручка / количество Won`; если Won нет, используется 0.
+- **Число лидов на этапе:** накопительное число лидов, достигших данного этапа или более позднего.
+- **Конверсия этапа:** `достигшие следующего этапа / достигшие предыдущего этапа × 100%`.
+- **Конверсия источника:** `Won из источника / все лиды источника × 100%`.
+- **Выручка за месяц:** сумма выигранных сделок, сгруппированная по месяцу `closed_at`.
 
-Rows without a valid creation date or required fields are reported or excluded during validation. Revenue is counted only for won deals. The filters operate on the selected set of lead records; monthly revenue is grouped by closing date.
+Суммы выражены в условных единицах (у.е.), валюта не предполагается. Фильтр даты относится к дате создания лида, а график выручки группирует сделки по дате закрытия в пределах текущей выборки.
 
-## Project structure
+## Структура проекта
 
 ```text
 sales-business-dashboard/
 ├── app.py
-├── requirements.txt
-├── README.md
 ├── data/
-│   └── synthetic_sales.csv
+│   ├── synthetic_sales.csv
+│   └── README.md
 ├── src/
 │   ├── __init__.py
-│   ├── data_loader.py
+│   ├── data.py
 │   ├── metrics.py
 │   └── charts.py
-└── tests/
-    ├── test_metrics.py
-    ├── test_data_loader.py
-    └── fixtures/
-        └── small_sample.csv
+├── tests/
+│   ├── fixtures/small_sample.csv
+│   └── test_metrics.py
+├── .streamlit/config.toml
+├── .gitignore
+├── LICENSE
+├── pytest.ini
+├── requirements.txt
+└── README.md
 ```
 
-## Run locally
+## Запуск
 
-Python 3.10+ is recommended.
+Нужен Python 3.10+.
 
 ### Windows PowerShell
 
 ```powershell
 py -m venv .venv
-.venv\\Scripts\\Activate.ps1
-python -m pip install -r requirements.txt
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 streamlit run app.py
 ```
 
@@ -71,30 +78,29 @@ streamlit run app.py
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Streamlit prints a local URL (usually `http://localhost:8501`).
+Streamlit выведет локальный URL, обычно `http://localhost:8501`.
 
-## Run tests
+## Тесты и ручная проверка
 
 ```bash
-python -m pytest -q
+pytest -q
 ```
 
-## Dataset
+Файл `tests/fixtures/small_sample.csv` содержит 4 строки: 2 выигранные сделки из 4 лидов, конверсия в Won — 50%, выручка — 2500 у.е. (1000 + 1500). Эти значения позволяют вручную проверить основные расчёты.
 
-`data/synthetic_sales.csv` contains generated learning data only. It is clearly labeled as synthetic and should not be interpreted as actual business performance. `tests/fixtures/small_sample.csv` is a deliberately small example intended for checking metric calculations by hand.
+## Формат пользовательского CSV
 
-## Tech stack
+Обязательные столбцы: `lead_id`, `created_at`, `source`, `status`, `stage`, `deal_amount`, `closed_at`. Статусы: `Open`, `Won`, `Lost`. Этапы: `New`, `Contacted`, `Qualified`, `Proposal`, `Won`. У закрытых сделок должна быть дата `closed_at`, не раньше `created_at`; у Open она может быть пустой. Некорректные строки пропускаются с предупреждением, повторяющиеся `lead_id` удаляются.
 
-- Python
-- Pandas
-- Streamlit
-- Plotly
-- pytest
+## Онлайн-развёртывание
 
-## Limitations
+Можно опубликовать приложение через [Streamlit Community Cloud](https://share.streamlit.io/): выберите репозиторий, ветку `main` и `app.py`. Зависимости перечислены в `requirements.txt`.
 
-This is a portfolio/demo project, not a production CRM. Conversion metrics reflect the current records and simple stage/status definitions; real sales pipelines may require stage history and cohort-based conversion logic.
+## Ограничения
+
+Данные синтетические, поэтому графики не отражают реальный бизнес. Нет рекламных расходов для расчёта CAC/ROAS; для каждого лида хранится только последний достигнутый этап, а история переходов между этапами не моделируется.
