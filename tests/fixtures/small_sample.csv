@@ -1,0 +1,5 @@
+lead_id,created_at,source,status,stage,deal_amount,closed_at
+L1,2026-01-03,Web,Won,Won,1000,2026-01-10
+L2,2026-01-04,Ads,Lost,Qualified,700,2026-01-12
+L3,2026-02-04,Web,Open,Contacted,500,
+L4,2026-02-06,Ads,Won,Won,1500,2026-02-15
