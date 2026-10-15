@@ -39,7 +39,7 @@ def validate_data(raw: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Validate, normalize and clean source rows; return data plus warnings.
 
     Invalid rows are removed rather than silently converted into plausible values.
-    \`closed_at\` is required for closed deals and must not precede \`created_at\`.
+    `closed_at` is required for closed deals and must not precede `created_at`.
     """
     if raw is None or raw.empty:
         raise DataValidationError("Нет данных: загрузите CSV с хотя бы одной строкой.")
