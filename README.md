@@ -97,9 +97,6 @@ pytest -q
 
 Обязательные столбцы: `lead_id`, `created_at`, `source`, `status`, `stage`, `deal_amount`, `closed_at`. Статусы: `Open`, `Won`, `Lost`. Этапы: `New`, `Contacted`, `Qualified`, `Proposal`, `Won`. У закрытых сделок должна быть дата `closed_at`, не раньше `created_at`; у Open она может быть пустой. Некорректные строки пропускаются с предупреждением, повторяющиеся `lead_id` удаляются.
 
-## Онлайн-развёртывание
-
-Можно опубликовать приложение через [Streamlit Community Cloud](https://share.streamlit.io/): выберите репозиторий, ветку `main` и `app.py`. Зависимости перечислены в `requirements.txt`.
 
 ## Ограничения
 
